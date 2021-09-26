@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Movies</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            font-family: Arial, Helvetica, sans-serif
+        }
+        body {
+            background-color: #1f1f1f;
+            color: white;
+            padding: 10px 20px 0px 20px;
+        }
+        #logo {
+            height: 40px;
+            width: 72px;
+        }
+        img {
+            height: 280px;
+            width: 200px;
+        }
+        .fa-bars {
+            margin: 12px 0px 0px 0px;
+        }
+        #ul1 {
+            list-style-type: none;
+            display: flex;
+            flex-basis: 20px;
+            justify-content: space-between;
+            padding: 0px 30px;
+        }
+        .ul2 {
+            list-style-type: none;
+            display: flex;
+            padding-bottom: 20px;
+        }
+        
+        #input {
+            flex-grow: 1;
+            display: flex;
+            height: 36px;
+        }
+        input {
+            border: 2px solid white;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            flex-grow: 1;
+            font-size: 18px;
+        }
+        #ul1 li {
+            padding: 0px 10px 0px 10px;
+            font-size: 18px;
+        }
+        .ul2 > li {
+            padding-right: 4px;
+            font-size: 14px;
+            color: rgb(224, 222, 222);
+        }
+        .menu {
+            border-radius: 4px;
+            padding: 0px 10px 0px 10px;
+        }
+        .menu:hover {
+            background-color: #6d6a6a;
+        }
+        #submit {
+            cursor: pointer;
+            width: 40px;
+            background-color: white;
+        }
+        .fa-search {
+            padding: 10px 0px 0px 20px;
+            color: #1f1f1f;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        #container {
+            padding: 40px 40px 0px 40px;
+            
+
+        }
+        .card {
+            border: 2px solid white;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px;
+            width: 1000px;
+        }
+        .error {
+            width: 800px;
+            height: 420px;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 0%);
+        }
+        .fa-star {
+            color: #f5c518;
+        }
+        .rating {
+            float: right;
+            position: relative;
+            top: -50px;
+        }
+        .ul3 {
+            float: left;
+            padding-left: 50px;
+        }
+        .poster {
+            float: left;
+        }
+        .clear {
+            clear: both;
+        }
+        h1 {
+            padding-bottom: 4px;
+        }
+        .recommend {
+            background-color: #f5c518;
+            border-radius: 4px;
+            font-size: 18px;
+            color: black;
+            padding: 10px 0px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>   
+        <ul id="ul1">
+            <li>
+                <img src="https://ieee-dataport.org/sites/default/files/imdb1_0.png" alt="imdb-logo" id="logo">
+            </li>
+            <li class="menu">
+                <i class="fa fa-bars" aria-hidden="true">&nbsp; Menu</i>
+            </li>
+            <li id="input">
+                <input type="text" name="movie" id="movie" placeholder="  Search IMDb">
+                <i class="fa fa-search" aria-hidden="true" id="submit"></i>
+            </li>
+            <li class="pro">
+                IMDbPro
+            </li>
+            <li>
+                <i class="fa fa-calendar-minus-o" aria-hidden="true">Watchlist</i>
+            </li>
+            <li>Sign In</li>
+        </ul>
+
+        
+    </nav>
+    <div id="container"></div>
+    <script>
+        var container = document.getElementById("container");
+        var btn = document.getElementById("submit");
+        var apiKey = "5c438500";
+        
+        btn.addEventListener("click", () => {
+            var movie = document.getElementById("movie").value;
+            var url = `https://www.omdbapi.com/?apikey=${apiKey}&t=${movie}`;
+            fetch(url)
+            .then( response => {
+                if (response.status >= 200 && response.status <= 299) {
+                    return response.json();
+                }
+            })
+            .then( res => {
+                container.innerHTML = "";
+                console.log( res );
+
+                if( res.Response == "False" ){
+                    throw Error("No Such Movie Found!!!");
+                }
+                var card = document.createElement("div");
+                card.className = "card";
+                var name = document.createElement("h1");
+                name.textContent = res.Title;
+                card.appendChild(name);
+                
+
+                // List below title
+
+                var ul = document.createElement("ul");
+                ul.className = "ul2";
+                var li1 = document.createElement("li");
+                var li2 = document.createElement("li");
+                var li3 = document.createElement("li");
+                var li4 = document.createElement("li");
+                var li5 = document.createElement("li");
+                li1.textContent = res.Year;
+                ul.appendChild(li1);
+                li2.textContent = ".";
+                ul.appendChild(li2);
+                li3.textContent = res.Rated;
+                ul.appendChild(li3);
+                li4.textContent = ".";
+                ul.appendChild(li4);
+                li5.textContent = res.Language;
+                ul.appendChild(li5);
+                card.appendChild(ul);
+
+                // Rating
+            
+                var rating = document.createElement("div");
+                rating.className = "rating";
+                rating.innerHTML = ` <i class="fa fa-star" aria-hidden="true"></i>
+                ${res.Ratings[0].Value} `;
+                
+                card.appendChild( rating );
+
+                // Image
+
+                var poster = document.createElement("img");
+                poster.src = res.Poster;
+                poster.className = "poster";
+                card.appendChild(poster);
+
+                // details
+
+                var ul3 = document.createElement("ul");
+                ul3.className = "ul3";
+                ul3.innerHTML = `
+                    <li>Release Date: ${res.Released}</li>
+                    <li>Actors: ${res.Actors}</li>
+                    <li>Awards: ${res.Awards}</li>
+                    <li>Country: ${res.Country}</li>
+                    <li>Plot: ${res.plot}</li>
+                    <li>Run Time: ${res.Runtime}</li>
+                `;
+                card.appendChild(ul3);
+                var clear = document.createElement("div");
+                clear.className = "clear";
+                card.appendChild(clear);
+
+                // recommend
+
+                var rating = res.Ratings[0].Value;
+                rating = rating.split("/");
+                if( rating[0] > 8.5){
+                    var recommend = document.createElement("div");
+                    recommend.textContent = "Highly Recommended";
+                    recommend.className = "recommend";
+                    card.appendChild(recommend);
+                }
+
+                container.appendChild(card);
+            })
+            .catch((error) => {
+                console.log(error);
+                container.innerHTML = "";
+                var img = document.createElement("img");
+                img.className = "error";
+                img.src = "https://www.prestashop.com/sites/default/files/styles/blog_750x320/public/blog/2019/10/banner_error_404.jpg?itok=eAS4swln";
+                container.appendChild(img);
+            })
+        });
+
+    </script>
+</body>
+</html>
